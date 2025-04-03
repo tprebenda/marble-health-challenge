@@ -1,3 +1,6 @@
+## Marble Health Challenge
+Contains the code necessary to complete the Marble Health interview challenge.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
