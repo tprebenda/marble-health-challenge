@@ -1,47 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+
+import { useState } from "react";
 import moment from "moment";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import MeetingDialog from "../components/MeetingDialog";
+import { TEST_EVENTS } from "../mockData";
 
 // Setup the localizer by providing the moment Object to the correct localizer.
 const localizer = momentLocalizer(moment);
-
-const TEST_EVENTS = [
-  {
-    id: 0,
-    title: "Board meeting",
-    attendees: ["Troy Prebenda", "Lumen Board"],
-    start: new Date(2025, 3, 29, 9, 0, 0),
-    end: new Date(2025, 3, 29, 13, 0, 0),
-  },
-  {
-    id: 1,
-    title: "MS training",
-    // allDay: true,
-    attendees: ["Troy Prebenda"],
-    start: new Date(2025, 3, 29, 13, 0, 0),
-    end: new Date(2025, 3, 29, 16, 30, 0),
-  },
-  {
-    id: 2,
-    title: "Team lead meeting",
-    attendees: ["Troy Prebenda", "Fireteam Leader"],
-    start: new Date(2025, 3, 29, 8, 30, 0),
-    end: new Date(2025, 3, 29, 12, 30, 0),
-  },
-  {
-    id: 11,
-    title: "Birthday Party",
-    attendees: ["Troy Prebenda"], // just me, sad :(
-    start: new Date(2025, 3, 30, 7, 0, 0),
-    end: new Date(2025, 3, 30, 10, 30, 0),
-  },
-];
 
 export default function MyCalendar() {
   const events = useState([]);
@@ -55,7 +27,7 @@ export default function MyCalendar() {
   };
 
   return (
-    <>
+    <LocalizationProvider dateAdapter={AdapterMoment}>
       <Box height="80vh">
         <Calendar
           localizer={localizer}
@@ -77,6 +49,6 @@ export default function MyCalendar() {
         </Button>
         <MeetingDialog open={dialogIsOpen} handleClose={handleDialogClose} />
       </Box>
-    </>
+    </LocalizationProvider>
   );
 }

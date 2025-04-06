@@ -8,6 +8,7 @@ import DialogActions from "@mui/material/DialogActions";
 import Paper, { PaperProps } from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Draggable from "react-draggable";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 // Draggable Paper component for moving the modal
 function PaperComponent(props: PaperProps) {
@@ -70,11 +71,12 @@ function MeetingDialog({ handleClose, open }: MeetingDialogProps) {
           <TextField
             label="Attendees"
             variant="outlined"
-            helperText="(Comma-delimited)"
+            helperText="Note: Comma-delimited"
             margin="normal"
             fullWidth
             required
           />
+          <DatePicker sx={{ mt: 2 }} />
         </Box>
       </DialogContent>
       <DialogActions>
