@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
 import Box from "@mui/material/Box";
@@ -7,24 +6,23 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Paper, { PaperProps } from "@mui/material/Paper";
 import Button from "@mui/material/Button";
-import Draggable from "react-draggable";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { styled } from "@mui/material/styles";
+import Grid from "@mui/material/Grid";
+import DraggablePaper from "./DraggablePaper";
 
-// Draggable Paper component for moving the modal
-function PaperComponent(props: PaperProps) {
-  const nodeRef = useRef<HTMLDivElement>(null);
-  return (
-    <Draggable
-      nodeRef={nodeRef as React.RefObject<HTMLDivElement>}
-      handle="#draggable-dialog-title"
-      cancel={'[class*="MuiDialogContent-root"]'}
-    >
-      <Paper {...props} ref={nodeRef} />
-    </Draggable>
-  );
-}
+// Styled Paper element to hold Date Pickers in MUI grid component
+const PickerGridItem = styled(Paper)(({ theme }) => ({
+  backgroundColor: "#fff",
+  ...theme.typography.body2,
+  textAlign: "center",
+  color: theme.palette.text.secondary,
+  ...theme.applyStyles("dark", {
+    backgroundColor: "#1A2027",
+  }),
+}));
 
-export interface MeetingDialogProps {
+interface MeetingDialogProps {
   open: boolean;
   handleClose: () => void;
 }
@@ -34,7 +32,7 @@ function MeetingDialog({ handleClose, open }: MeetingDialogProps) {
     <Dialog
       onClose={handleClose}
       open={open}
-      PaperComponent={PaperComponent}
+      PaperComponent={DraggablePaper}
       slotProps={{
         paper: {
           component: "form",
@@ -76,7 +74,18 @@ function MeetingDialog({ handleClose, open }: MeetingDialogProps) {
             fullWidth
             required
           />
-          <DatePicker sx={{ mt: 2 }} />
+          <Grid container spacing={2} mt={2}>
+            <Grid size={6}>
+              <PickerGridItem>
+                <DateTimePicker label="Start Date" />
+              </PickerGridItem>
+            </Grid>
+            <Grid size={6}>
+              <PickerGridItem>
+                <DateTimePicker label="Start Date" />
+              </PickerGridItem>
+            </Grid>
+          </Grid>
         </Box>
       </DialogContent>
       <DialogActions>
