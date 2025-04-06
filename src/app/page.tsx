@@ -9,14 +9,15 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import MeetingDialog from "../components/MeetingDialog";
-import { TEST_EVENTS } from "../mockData";
+import MeetingDialog from "./components/MeetingDialog";
+import { TEST_EVENTS } from "./mockData";
+import { CalendarEvent } from "./interfaces";
 
 // Setup the localizer by providing the moment Object to the correct localizer.
 const localizer = momentLocalizer(moment);
 
 export default function MyCalendar() {
-  const events = useState([]);
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
   const handleDialogClose = () => {
     setDialogIsOpen(false);
@@ -29,9 +30,9 @@ export default function MyCalendar() {
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <Box height="80vh">
-        <Calendar
+        <Calendar<CalendarEvent>
           localizer={localizer}
-          events={TEST_EVENTS}
+          events={events.length !== 0 ? events : TEST_EVENTS}
           startAccessor="start"
           endAccessor="end"
           defaultView="month"

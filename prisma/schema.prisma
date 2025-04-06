@@ -13,10 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id      Int       @id @default(autoincrement())
+model Event {
+  id      Int      @id @default(autoincrement())
   title   String
   details String?
   start   DateTime
-  end     DateTime?
+  end     DateTime
 }
