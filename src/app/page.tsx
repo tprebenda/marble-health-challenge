@@ -27,6 +27,14 @@ export default function MyCalendar() {
     setDialogIsOpen(true);
   };
 
+  // TODO: ADD SOMETHING LIKE THIS - (open dialog!!!)
+  // const handleSelectSlot = ({ start, end }) => {
+  //   const title = window.prompt("New Event Name:");
+  //   if (title) {
+  //     setEvents([...events, { start, end, title }]);
+  //   }
+  // };
+
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <Box height="80vh">
@@ -36,6 +44,9 @@ export default function MyCalendar() {
           startAccessor="start"
           endAccessor="end"
           defaultView="month"
+          // TODO:
+          // onSelectEvent={}
+          // onSelectSlot={}
         />
       </Box>
       <Box
