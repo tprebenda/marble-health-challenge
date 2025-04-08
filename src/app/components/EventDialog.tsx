@@ -222,7 +222,7 @@ function EventDialog({
             variant="outlined"
             margin="normal"
             fullWidth
-            value={form.details}
+            value={form.details || ""}
             onChange={onTextfieldChange("details")}
           />
           <TextField
