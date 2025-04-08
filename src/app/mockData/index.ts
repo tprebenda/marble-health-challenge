@@ -1,6 +1,6 @@
-import { CalendarEvent } from "../interfaces";
+import { CalendarEventResponse } from "../interfaces";
 
-export const TEST_EVENTS: CalendarEvent[] = [
+export const TEST_EVENTS: CalendarEventResponse[] = [
   {
     id: 0,
     title: "Board meeting",
@@ -11,7 +11,6 @@ export const TEST_EVENTS: CalendarEvent[] = [
   {
     id: 1,
     title: "MS training",
-    // allDay: true,
     attendees: ["Troy Prebenda"],
     start: new Date(2025, 3, 29, 13, 0, 0),
     end: new Date(2025, 3, 29, 16, 30, 0),

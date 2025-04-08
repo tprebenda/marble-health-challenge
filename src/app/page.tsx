@@ -10,13 +10,13 @@ import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import MeetingDialog from "./components/MeetingDialog";
-import { CalendarEvent } from "./interfaces";
+import { CalendarEventResponse } from "./interfaces";
 
 // Setup the localizer by providing the moment Object to the correct localizer.
 const localizer = momentLocalizer(moment);
 
 export default function MyCalendar() {
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [events, setEvents] = useState<CalendarEventResponse[]>([]);
   const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
   const handleDialogClose = () => {
     setDialogIsOpen(false);
@@ -33,14 +33,9 @@ export default function MyCalendar() {
         "Content-Type": "application/json",
       },
     });
-    const data = await response.json();
-    const parsedEvents: CalendarEvent[] = data.map((e: any) => ({
-      ...e,
-      start: new Date(e.start),
-      end: new Date(e.end),
-    }));
-    console.log(parsedEvents);
-    setEvents(parsedEvents);
+    const data: CalendarEventResponse[] = await response.json();
+    console.log(data);
+    setEvents(data);
   };
 
   // Fetch events from db on startup
@@ -59,7 +54,7 @@ export default function MyCalendar() {
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <Box height="80vh">
-        <Calendar<CalendarEvent>
+        <Calendar<CalendarEventResponse>
           localizer={localizer}
           events={events}
           startAccessor="start"
@@ -83,7 +78,7 @@ export default function MyCalendar() {
         <MeetingDialog
           open={dialogIsOpen}
           handleClose={handleDialogClose}
-          onEventCreated={fetchEvents}
+          onSuccess={fetchEvents}
         />
       </Box>
     </LocalizationProvider>

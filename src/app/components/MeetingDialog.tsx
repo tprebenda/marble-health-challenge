@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
 
 import DialogTitle from "@mui/material/DialogTitle";
@@ -14,6 +14,7 @@ import { styled } from "@mui/material/styles";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import Grid from "@mui/material/Grid";
 import Alert from "@mui/material/Alert";
+import { CalendarEventEdit, CalendarEventResponse } from "../interfaces";
 
 // Styled Paper element to hold Date Pickers in MUI grid component
 const PickerGridItem = styled(Paper)(({ theme }) => ({
@@ -29,32 +30,75 @@ const PickerGridItem = styled(Paper)(({ theme }) => ({
 interface MeetingDialogProps {
   open: boolean;
   handleClose: () => void;
-  onEventCreated: () => void;
+  onSuccess: () => void;
+  initialEvent?: CalendarEventResponse | null;
 }
 
 function MeetingDialog({
   open,
   handleClose,
-  onEventCreated,
+  onSuccess,
+  initialEvent,
 }: MeetingDialogProps) {
-  const [startDate, setStartDate] = useState<moment.Moment | null>(null);
-  const [endDate, setEndDate] = useState<moment.Moment | null>(null);
-  const [pickerError, setPickerError] = useState<string>("");
+  const [form, setForm] = useState<CalendarEventEdit>({
+    title: "",
+    details: "",
+    attendees: "",
+    start: null,
+    end: null,
+  });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [pickerError, setPickerError] = useState<string>("");
   const [submitError, setSubmitError] = useState<string>("");
 
+  // Load pre-existing event if editing from calendar
+  useEffect(() => {
+    if (initialEvent) {
+      setForm({
+        ...initialEvent,
+        attendees: initialEvent.attendees.join(", "),
+        start: moment(initialEvent.start),
+        end: moment(initialEvent.end),
+      });
+    } else {
+      setForm({
+        title: "",
+        details: "",
+        attendees: "",
+        start: null,
+        end: null,
+      });
+    }
+  }, [initialEvent]);
+
+  // Reset form on dialog close
   const onDialogClose = () => {
-    // Reset form on dialog close
     handleClose();
-    setStartDate(null);
-    setEndDate(null);
+    setForm({
+      title: "",
+      details: "",
+      attendees: "",
+      start: null,
+      end: null,
+    });
     setPickerError("");
     setSubmitError("");
   };
 
+  // Text fields
+  const onTextfieldChange =
+    (field: keyof CalendarEventEdit) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setForm({ ...form, [field]: e.target.value });
+    };
+
+  // Start date
   const onStartDateChange = (newValue: moment.Moment | null) => {
-    setStartDate(newValue);
-    if (endDate && newValue && newValue.isAfter(endDate)) {
+    setForm({
+      ...form,
+      start: newValue,
+    });
+    if (form.end && newValue && newValue.isAfter(form.end)) {
       // Disable submit on invalid date range
       setPickerError("Start date must be before end date");
     } else {
@@ -62,9 +106,13 @@ function MeetingDialog({
     }
   };
 
+  // End date
   const onEndDateChange = (newValue: moment.Moment | null) => {
-    setEndDate(newValue);
-    if (startDate && newValue && newValue.isBefore(startDate)) {
+    setForm({
+      ...form,
+      end: newValue,
+    });
+    if (form.start && newValue && newValue.isBefore(form.start)) {
       // Disable submit on invalid date range
       setPickerError("End date must be after start date");
     } else {
@@ -78,21 +126,23 @@ function MeetingDialog({
     setSubmitError("");
 
     try {
-      const formData = new FormData(event.currentTarget);
-      const formJson = Object.fromEntries((formData as any).entries());
-      const response = await fetch("/api/events", {
-        method: "POST",
+      // Edit existing event or post new one
+      const method = form.id ? "PUT" : "POST";
+      const endpoint = form.id ? `/api/events/${form.id}` : "/api/events";
+
+      const response = await fetch(endpoint, {
+        method: method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          title: formJson.title,
-          details: formJson.details,
-          attendees: formJson.attendees
+          title: form.title,
+          details: form.details,
+          attendees: form.attendees
             .split(",")
             .map((item: string) => item.trim()),
-          start: formJson.startDate,
-          end: formJson.endDate,
+          start: form.start!.toDate(),
+          end: form.end!.toDate(),
         }),
       });
 
@@ -101,12 +151,13 @@ function MeetingDialog({
       if (!response.ok) {
         setSubmitError(data.error || "Unknown error");
       } else {
-        console.log("Event created:", data);
-        onEventCreated();
+        console.log("Event created/updated:", data);
+        // Refetch events to show newly created event on calendar
+        onSuccess();
         onDialogClose();
       }
     } catch (err) {
-      setSubmitError("Failed to create event.");
+      setSubmitError("Failed to create/update event.");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -136,16 +187,16 @@ function MeetingDialog({
             margin="normal"
             fullWidth
             required
-            id="title"
-            name="title"
+            value={form.title}
+            onChange={onTextfieldChange("title")}
           />
           <TextField
-            label="Description"
+            label="Details"
             variant="outlined"
             margin="normal"
             fullWidth
-            id="description"
-            name="description"
+            value={form.details}
+            onChange={onTextfieldChange("details")}
           />
           <TextField
             label="Attendees"
@@ -154,23 +205,21 @@ function MeetingDialog({
             margin="normal"
             fullWidth
             required
-            id="attendees"
-            name="attendees"
+            value={form.attendees}
+            onChange={onTextfieldChange("attendees")}
           />
           <Grid container spacing={2} mt={2}>
             <Grid size={6}>
               <PickerGridItem>
                 <DateTimePicker
                   label="Start Date"
-                  value={startDate}
+                  value={form.start}
                   onChange={onStartDateChange}
                   slotProps={{
                     textField: {
                       error: !!pickerError,
                       helperText: pickerError,
                       required: true,
-                      id: "startDate",
-                      name: "startDate",
                     },
                   }}
                 />
@@ -180,15 +229,13 @@ function MeetingDialog({
               <PickerGridItem>
                 <DateTimePicker
                   label="End Date"
-                  value={endDate}
+                  value={form.end}
                   onChange={onEndDateChange}
                   slotProps={{
                     textField: {
                       error: !!pickerError,
                       helperText: pickerError,
                       required: true,
-                      id: "endDate",
-                      name: "endDate",
                     },
                   }}
                 />
