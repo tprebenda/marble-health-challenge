@@ -41,7 +41,7 @@ function EventDialog({
   onSuccess,
   initialEvent,
 }: EventDialogProps) {
-  const [form, setForm] = useState<CalendarEventEdit>({
+  const [eventForm, setEventForm] = useState<CalendarEventEdit>({
     title: "",
     details: "",
     attendees: "",
@@ -55,14 +55,14 @@ function EventDialog({
   // Load pre-existing event if editing from calendar
   useEffect(() => {
     if (initialEvent) {
-      setForm({
+      setEventForm({
         ...initialEvent,
         attendees: initialEvent.attendees.join(", "),
         start: moment(initialEvent.start),
         end: moment(initialEvent.end),
       });
     } else {
-      setForm({
+      setEventForm({
         title: "",
         details: "",
         attendees: "",
@@ -72,10 +72,10 @@ function EventDialog({
     }
   }, [initialEvent]);
 
-  // Reset form on dialog close
+  // Reset eventForm on dialog close
   const onDialogClose = () => {
     handleClose();
-    setForm({
+    setEventForm({
       title: "",
       details: "",
       attendees: "",
@@ -90,16 +90,16 @@ function EventDialog({
   const onTextfieldChange =
     (field: keyof CalendarEventEdit) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setForm({ ...form, [field]: e.target.value });
+      setEventForm({ ...eventForm, [field]: e.target.value });
     };
 
   // Start date
   const onStartDateChange = (newValue: moment.Moment | null) => {
-    setForm({
-      ...form,
+    setEventForm({
+      ...eventForm,
       start: newValue,
     });
-    if (form.end && newValue && newValue.isAfter(form.end)) {
+    if (eventForm.end && newValue && newValue.isAfter(eventForm.end)) {
       // Disable submit on invalid date range
       setPickerError("Start date must be before end date");
     } else {
@@ -109,11 +109,11 @@ function EventDialog({
 
   // End date
   const onEndDateChange = (newValue: moment.Moment | null) => {
-    setForm({
-      ...form,
+    setEventForm({
+      ...eventForm,
       end: newValue,
     });
-    if (form.start && newValue && newValue.isBefore(form.start)) {
+    if (eventForm.start && newValue && newValue.isBefore(eventForm.start)) {
       // Disable submit on invalid date range
       setPickerError("End date must be after start date");
     } else {
@@ -128,8 +128,10 @@ function EventDialog({
 
     try {
       // Edit existing event or post new one
-      const method = form.id ? "PUT" : "POST";
-      const endpoint = form.id ? `/api/events/${form.id}` : "/api/events";
+      const method = eventForm.id ? "PUT" : "POST";
+      const endpoint = eventForm.id
+        ? `/api/events/${eventForm.id}`
+        : "/api/events";
 
       const response = await fetch(endpoint, {
         method: method,
@@ -137,13 +139,13 @@ function EventDialog({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          title: form.title,
-          details: form.details,
-          attendees: form.attendees
+          title: eventForm.title,
+          details: eventForm.details,
+          attendees: eventForm.attendees
             .split(",")
             .map((item: string) => item.trim()),
-          start: form.start!.toDate(),
-          end: form.end!.toDate(),
+          start: eventForm.start!.toDate(),
+          end: eventForm.end!.toDate(),
         }),
       });
 
@@ -167,13 +169,16 @@ function EventDialog({
 
   const handleDelete = async () => {
     // Only process delete if editing existing event, and user confirms
-    if (!form.id || !confirm("Are you sure you want to delete this event?")) {
+    if (
+      !eventForm.id ||
+      !confirm("Are you sure you want to delete this event?")
+    ) {
       return;
     }
 
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/events/${form.id}`, {
+      const response = await fetch(`/api/events/${eventForm.id}`, {
         method: "DELETE",
       });
 
@@ -204,7 +209,7 @@ function EventDialog({
       }}
     >
       <DialogTitle style={{ cursor: "move" }} id="draggable-dialog-title">
-        {form.id ? "Edit Existing Event" : "Add New Event To Calendar"}
+        {eventForm.id ? "Edit Existing Event" : "Add New Event To Calendar"}
       </DialogTitle>
       <DialogContent>
         <Box display="flex" flexDirection="column" alignItems="center" p={1}>
@@ -214,7 +219,7 @@ function EventDialog({
             margin="normal"
             fullWidth
             required
-            value={form.title}
+            value={eventForm.title}
             onChange={onTextfieldChange("title")}
           />
           <TextField
@@ -222,7 +227,7 @@ function EventDialog({
             variant="outlined"
             margin="normal"
             fullWidth
-            value={form.details || ""}
+            value={eventForm.details || ""}
             onChange={onTextfieldChange("details")}
           />
           <TextField
@@ -232,7 +237,7 @@ function EventDialog({
             margin="normal"
             fullWidth
             required
-            value={form.attendees}
+            value={eventForm.attendees}
             onChange={onTextfieldChange("attendees")}
           />
           <Grid container spacing={2} mt={2}>
@@ -240,7 +245,7 @@ function EventDialog({
               <PickerGridItem>
                 <DateTimePicker
                   label="Start Date"
-                  value={form.start}
+                  value={eventForm.start}
                   onChange={onStartDateChange}
                   slotProps={{
                     textField: {
@@ -256,7 +261,7 @@ function EventDialog({
               <PickerGridItem>
                 <DateTimePicker
                   label="End Date"
-                  value={form.end}
+                  value={eventForm.end}
                   onChange={onEndDateChange}
                   slotProps={{
                     textField: {
@@ -269,11 +274,15 @@ function EventDialog({
               </PickerGridItem>
             </Grid>
           </Grid>
-          {submitError && <Alert severity="error">{submitError}</Alert>}
+          {submitError && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {submitError}
+            </Alert>
+          )}
         </Box>
       </DialogContent>
       <DialogActions>
-        {form.id && (
+        {eventForm.id && (
           <Button onClick={handleDelete} color="error" disabled={isLoading}>
             Delete
           </Button>
@@ -282,7 +291,7 @@ function EventDialog({
           Cancel
         </Button>
         <Button type="submit" disabled={!!pickerError || isLoading}>
-          {form.id ? "Edit" : "Create"} Event
+          {eventForm.id ? "Edit" : "Create"} Event
         </Button>
       </DialogActions>
     </Dialog>
