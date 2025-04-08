@@ -188,7 +188,7 @@ function EventDialog({
       }
       // Refresh events following delete
       onSuccess();
-      handleClose();
+      onDialogClose();
     } catch (err) {
       setSubmitError("Failed to delete event.");
     } finally {

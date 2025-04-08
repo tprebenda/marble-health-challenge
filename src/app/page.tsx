@@ -39,6 +39,7 @@ export default function MyCalendar() {
   }, []);
 
   const handleDialogClose = () => {
+    setSelectedEvent(null);
     setDialogIsOpen(false);
   };
 
