@@ -9,7 +9,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import MeetingDialog from "./components/MeetingDialog";
+import EventDialog from "./components/EventDialog";
 import { CalendarEventResponse } from "./interfaces";
 
 // Setup the localizer by providing the moment Object to the correct localizer.
@@ -84,7 +84,7 @@ export default function MyCalendar() {
         <Button variant="contained" onClick={handleAddClick}>
           Add a new event!
         </Button>
-        <MeetingDialog
+        <EventDialog
           open={dialogIsOpen}
           handleClose={handleDialogClose}
           onSuccess={fetchEvents}

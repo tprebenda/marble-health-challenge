@@ -27,19 +27,20 @@ const PickerGridItem = styled(Paper)(({ theme }) => ({
   }),
 }));
 
-interface MeetingDialogProps {
+interface EventDialogProps {
   open: boolean;
   handleClose: () => void;
   onSuccess: () => void;
   initialEvent?: CalendarEventResponse | null;
 }
 
-function MeetingDialog({
+// Dialog for adding/editing/deleting events, complete with texfields and datetime pickers (with validation)
+function EventDialog({
   open,
   handleClose,
   onSuccess,
   initialEvent,
-}: MeetingDialogProps) {
+}: EventDialogProps) {
   const [form, setForm] = useState<CalendarEventEdit>({
     title: "",
     details: "",
@@ -164,6 +165,32 @@ function MeetingDialog({
     }
   };
 
+  const handleDelete = async () => {
+    // Only process delete if editing existing event, and user confirms
+    if (!form.id || !confirm("Are you sure you want to delete this event?")) {
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/events/${form.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        setSubmitError(data.error || "Unknown error");
+      }
+      // Refresh events following delete
+      onSuccess();
+      handleClose();
+    } catch (err) {
+      setSubmitError("Failed to delete event.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Dialog
       onClose={onDialogClose}
@@ -246,6 +273,11 @@ function MeetingDialog({
         </Box>
       </DialogContent>
       <DialogActions>
+        {form.id && (
+          <Button onClick={handleDelete} color="error" disabled={isLoading}>
+            Delete
+          </Button>
+        )}
         <Button onClick={onDialogClose} disabled={isLoading}>
           Cancel
         </Button>
@@ -257,4 +289,4 @@ function MeetingDialog({
   );
 }
 
-export default MeetingDialog;
+export default EventDialog;
