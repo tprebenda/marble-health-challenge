@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server';
-import { prisma } from "@/lib/prisma"
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
-    const events = await prisma.event.findMany({
-      orderBy: { start: 'asc' },
-    });
+    const events = await prisma.event.findMany();
     return NextResponse.json(events);
   } catch (error) {
     console.error('GET /api/events error:', error);

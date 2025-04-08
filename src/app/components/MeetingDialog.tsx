@@ -29,9 +29,14 @@ const PickerGridItem = styled(Paper)(({ theme }) => ({
 interface MeetingDialogProps {
   open: boolean;
   handleClose: () => void;
+  onEventCreated: () => void;
 }
 
-function MeetingDialog({ handleClose, open }: MeetingDialogProps) {
+function MeetingDialog({
+  open,
+  handleClose,
+  onEventCreated,
+}: MeetingDialogProps) {
   const [startDate, setStartDate] = useState<moment.Moment | null>(null);
   const [endDate, setEndDate] = useState<moment.Moment | null>(null);
   const [pickerError, setPickerError] = useState<string>("");
@@ -40,11 +45,11 @@ function MeetingDialog({ handleClose, open }: MeetingDialogProps) {
 
   const onDialogClose = () => {
     // Reset form on dialog close
+    handleClose();
     setStartDate(null);
     setEndDate(null);
     setPickerError("");
     setSubmitError("");
-    handleClose();
   };
 
   const onStartDateChange = (newValue: moment.Moment | null) => {
@@ -97,6 +102,7 @@ function MeetingDialog({ handleClose, open }: MeetingDialogProps) {
         setSubmitError(data.error || "Unknown error");
       } else {
         console.log("Event created:", data);
+        onEventCreated();
         onDialogClose();
       }
     } catch (err) {
