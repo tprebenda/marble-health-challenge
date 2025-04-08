@@ -177,7 +177,7 @@ function MeetingDialog({
       }}
     >
       <DialogTitle style={{ cursor: "move" }} id="draggable-dialog-title">
-        Add New Event To Calendar
+        {form.id ? "Edit Existing Event" : "Add New Event To Calendar"}
       </DialogTitle>
       <DialogContent>
         <Box display="flex" flexDirection="column" alignItems="center" p={1}>
@@ -250,7 +250,7 @@ function MeetingDialog({
           Cancel
         </Button>
         <Button type="submit" disabled={!!pickerError || isLoading}>
-          Add Event
+          {form.id ? "Edit" : "Create"} Event
         </Button>
       </DialogActions>
     </Dialog>

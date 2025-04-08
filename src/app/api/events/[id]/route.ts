@@ -1,12 +1,17 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
-  const id = parseInt(params.id);
+export async function PUT(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const parsedId = parseInt(id);
+  console.log(parsedId);
   const body = await req.json();
 
   const updated = await prisma.event.update({
-    where: { id },
+    where: { id: parsedId },
     data: {
       title: body.title,
       details: body.details,
@@ -19,8 +24,12 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   return NextResponse.json(updated);
 }
 
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
-  const id = parseInt(params.id);
-  await prisma.event.delete({ where: { id } });
+export async function DELETE(
+  _: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const parsedId = parseInt(id);
+  await prisma.event.delete({ where: { id: parsedId } });
   return NextResponse.json({ success: true });
 }

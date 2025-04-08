@@ -18,13 +18,8 @@ const localizer = momentLocalizer(moment);
 export default function MyCalendar() {
   const [events, setEvents] = useState<CalendarEventResponse[]>([]);
   const [dialogIsOpen, setDialogIsOpen] = useState<boolean>(false);
-  const handleDialogClose = () => {
-    setDialogIsOpen(false);
-  };
-
-  const handleClick = () => {
-    setDialogIsOpen(true);
-  };
+  const [selectedEvent, setSelectedEvent] =
+    useState<CalendarEventResponse | null>(null);
 
   const fetchEvents = async () => {
     const response = await fetch("/api/events", {
@@ -42,6 +37,20 @@ export default function MyCalendar() {
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  const handleDialogClose = () => {
+    setDialogIsOpen(false);
+  };
+
+  const handleSelectEvent = (event: CalendarEventResponse) => {
+    setSelectedEvent(event);
+    setDialogIsOpen(true);
+  };
+
+  const handleAddClick = () => {
+    setSelectedEvent(null);
+    setDialogIsOpen(true);
+  };
 
   // TODO: ADD SOMETHING LIKE THIS - (open dialog!!!)
   // const handleSelectSlot = ({ start, end }) => {
@@ -61,7 +70,7 @@ export default function MyCalendar() {
           endAccessor="end"
           defaultView="month"
           // TODO:
-          // onSelectEvent={}
+          onSelectEvent={handleSelectEvent}
           // onSelectSlot={}
         />
       </Box>
@@ -72,13 +81,14 @@ export default function MyCalendar() {
         alignItems="center"
         marginTop={5}
       >
-        <Button variant="contained" onClick={handleClick}>
+        <Button variant="contained" onClick={handleAddClick}>
           Add a new event!
         </Button>
         <MeetingDialog
           open={dialogIsOpen}
           handleClose={handleDialogClose}
           onSuccess={fetchEvents}
+          initialEvent={selectedEvent}
         />
       </Box>
     </LocalizationProvider>
