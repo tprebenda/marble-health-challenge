@@ -7,7 +7,6 @@ export async function PUT(
 ) {
   const { id } = await params;
   const parsedId = parseInt(id);
-  console.log(parsedId);
   const body = await req.json();
 
   const updated = await prisma.event.update({

@@ -29,7 +29,6 @@ export default function MyCalendar() {
       },
     });
     const data: CalendarEventResponse[] = await response.json();
-    console.log(data);
     setEvents(data);
   };
 

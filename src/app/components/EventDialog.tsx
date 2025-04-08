@@ -154,7 +154,6 @@ function EventDialog({
       if (!response.ok) {
         setSubmitError(data.error || "Unknown error");
       } else {
-        console.log("Event created/updated:", data);
         // Refetch events to show newly created event on calendar
         onSuccess();
         onDialogClose();
