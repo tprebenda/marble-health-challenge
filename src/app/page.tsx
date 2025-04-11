@@ -52,6 +52,8 @@ export default function MyCalendar() {
     setDialogIsOpen(true);
   };
 
+  // FOLLOWUP: add onSelectSlot()
+
   return (
     <LocalizationProvider dateAdapter={AdapterMoment}>
       <Box height="80vh">

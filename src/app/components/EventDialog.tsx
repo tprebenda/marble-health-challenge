@@ -122,6 +122,7 @@ function EventDialog({
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    // FOLLOWUP: check shallow equality if initialEvent != null, only submit if different
     event.preventDefault();
     setIsLoading(true);
     setSubmitError("");
