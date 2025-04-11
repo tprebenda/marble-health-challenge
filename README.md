@@ -15,6 +15,7 @@ npm run dev
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 Make sure your local Postgres server is also up and running.
+(Be sure to define the `DATABASE_URL` variable in your `.env` file.)
 
 ## Followups
 

@@ -1,6 +1,6 @@
-import { CalendarEventResponse } from "../interfaces";
+import { CalendarEventRecord } from "../interfaces";
 
-export const TEST_EVENTS: CalendarEventResponse[] = [
+export const TEST_EVENTS: CalendarEventRecord[] = [
   {
     id: 0,
     title: "Board meeting",

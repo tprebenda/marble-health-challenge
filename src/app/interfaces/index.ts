@@ -1,6 +1,6 @@
 import { Moment } from "moment";
 
-export interface CalendarEventResponse {
+export interface CalendarEventRecord {
   id: number;
   title: string;
   details?: string;

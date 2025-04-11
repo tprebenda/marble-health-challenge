@@ -14,7 +14,7 @@ import { styled } from "@mui/material/styles";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import Grid from "@mui/material/Grid";
 import Alert from "@mui/material/Alert";
-import { CalendarEventEdit, CalendarEventResponse } from "../interfaces";
+import { CalendarEventEdit, CalendarEventRecord } from "../interfaces";
 
 // Styled Paper element to hold Date Pickers in MUI grid component
 const PickerGridItem = styled(Paper)(({ theme }) => ({
@@ -31,7 +31,7 @@ interface EventDialogProps {
   open: boolean;
   handleClose: () => void;
   onSuccess: () => void;
-  initialEvent?: CalendarEventResponse | null;
+  initialEvent?: CalendarEventRecord | null;
 }
 
 // Dialog for adding/editing/deleting events, complete with texfields and datetime pickers (with validation)
